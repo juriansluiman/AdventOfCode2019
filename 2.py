@@ -6,10 +6,10 @@
 f = open('2.txt', 'r')
 c = f.read()
 
-def initList(codes):
-	codes[1] = 12
-	codes[2] = 2
-	return codes
+def initList(codes, noun, verb):
+	codes[1] = noun
+	codes[2] = verb
+	return codes[:]
 
 def processBlock(codes, pos):
 	block  = codes[pos:pos+4];
@@ -31,19 +31,42 @@ def processBlock(codes, pos):
 	else:
 		raise Exception('No recognized opcode code')
 
+def processIntcode(input):
+	pos    = 0
+	result = True
+	while result:
+		result = processBlock(input, pos)
+		if result:
+			input = result
+			pos  += 4
+
+	return input[0]
+
 codes = c.split(',')
 codes = [ int(x) for x in codes]
-pos   = 0
 
 # Set initial values straight
-codes = initList(codes)
+codes = initList(codes, 12, 2)
+result = processIntcode(codes)
 
-result = True
-while result:
-	result = processBlock(codes, pos)
-	if result:
-		codes = result
-		pos  += 4
-
-print("Part 1", codes[0])
+print("Part 1", result)
 # 5534943
+
+codes = c.split(',')
+codes = [ int(x) for x in codes]
+
+for noun in range(0,100):
+	stop = False
+	for verb in range(0,100):
+		testCode = initList(codes, noun, verb)
+		result   = processIntcode(testCode)
+
+		if result == 19690720:
+			stop = True
+			break
+
+	if stop:
+		break
+
+print(testCode[0])
+print("Part 2", noun*100+verb)
